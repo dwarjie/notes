@@ -441,3 +441,161 @@ The reason is in JavaScript, enum are just object. Objects that has named proper
 
 // you may use Month.Jan or 0
 ```
+## Any
+Sometimes you may not know the type of a variable specially if it's from an API or user input. You may use the ```any```type and opt-out of the type checking of TypeScript and basically use the functionality of JavaScript.
+
+```ts
+let result : any;
+
+result = 1;
+console.log(result) // 1
+
+result = "Hello World"
+console.log(result) // Hello World
+
+result = [1, 2, 3]
+const total = result.reduce((a: number, b: number) => a + b, 0)
+```
+
+another example
+
+```ts
+// json may come from a third-party API
+const json = `{"latitude": 10.11, "longitude":12.12}`;
+
+// parse JSON to find location
+const currentLocation = JSON.parse(json);
+console.log(currentLocation); // { latitude: 10.11, longitude: 12.12 }
+
+
+// if you try to access a non-existing property, TypeScript will only return an undefined instead of throwing an error
+console.log(currentLocation.x)
+```
+## Void
+
+Void type is useless when using with variables. You cannot assign anything to it beside from ```undefined```. It is usually useful for functions. ```void``` type for functions typically means it does not return anything.
+
+```ts
+function log(message : string) : void {
+   console.log(message)
+}
+```
+## Union
+
+When your function parameters can be number or string, you can use the union type (e.g., string | number).
+
+```ts
+function add(a: string | number, b: string | number) : string | number {
+   if (typeof a === "number" && typeof b === "number") {
+      return a + b;
+   }
+   if (typeof a === "string" && typeof b === "string") {
+      return a.concat(b)
+   }
+
+   throw new Error("Parameters must be numbers or strings!")
+}
+```
+This is better than setting the parameter type as ```any```
+
+## Type aliases
+Type aliases allows you to create a new name or define an alias for an existing and complex types that will be used accross your application.
+
+```ts
+type alias = existingType // can be object, union, intersection, and function type
+```
+
+### Primitive types
+```ts
+type stringType = string;
+
+let firstName : stringType;
+let lastName : stringType;
+```
+
+### Object types
+```ts
+type Person = {
+   name: string,
+   age: number;
+}
+
+let person: Person = {
+   name: "John",
+   age: 23
+}
+```
+
+### Intersection types
+```ts
+type Personal = {
+   name: string;
+   age: number;
+}
+
+type Contact = {
+   email: string;
+   phone: string;
+}
+
+type Candidate = Personal & Contact; // intersection type
+
+let markInfo : Candidate = {
+   name: "Mark",
+   age: 23,
+   email: "mark@gmail.com",
+   phone: "090987178995"
+}
+```
+### String Literal
+This type is very useful when limiting the possible string values of a variable.
+```ts
+let click: 'click'; // the click is a string literal type that will only accept the string literal 'click'
+
+click = "dblclick" // compile error
+```
+
+This type will combine nicely with union types
+```ts
+type MyMouseEvent = 'click' | 'dblclick' | 'mouseup' | 'mousedown';
+let mouseEvent: MyMouseEvent;
+mouseEvent = 'click'; // valid
+mouseEvent = 'dblclick'; // valid
+mouseEvent = 'mouseup'; // valid
+mouseEvent = 'mousedown'; // valid
+mouseEvent = 'mouseover'; // compiler error
+
+let anotherEvent: MyMouseEvent;
+```
+## Never
+```never``` type holds no value. It is like an empty set. Meaning, you cannot assign a value to a variable with the never type.
+
+```ts
+let empty: never = 'hello' // Type 'string' is not assignable to type 'never'
+```
+The useful way or reason why we will use the ```never``` type is for indicating unreachable code or guaranteed to never execute. This tells TypeScript that the code is unreachable and can prevent errors or warning.
+
+```ts
+type Role = 'admin' | 'user' | 'guest';
+
+const unknownRole = (role: never): never => {
+  throw new Error(`Invalid role: ${role}`);
+};
+
+const authorize = (role: Role): string => {
+  switch (role) {
+    case 'admin':
+      return 'You can do anything';
+    case 'user':
+      return 'You can do something';
+    case 'guest':
+      return 'You can do nothing';
+    default:
+      // never reach here util we add a new role
+      return unknownRole(role);
+  }
+};
+
+console.log(authorize('admin'));
+```
+This code will prevent users that does not have a defined roles and will therefore prevent any errors or warning.
