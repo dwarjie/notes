@@ -599,3 +599,94 @@ const authorize = (role: Role): string => {
 console.log(authorize('admin'));
 ```
 This code will prevent users that does not have a defined roles and will therefore prevent any errors or warning.
+
+## Function types
+TypeScript allows you to specify a function types.
+```ts
+let add: (x: number, y: number) => number;
+
+// this means add variable expects a function with two number parameters and will return a number
+
+add = function(x: number, y: number) {
+   return x + y
+}
+
+let result = add(10, 20) // 30
+```
+## Optional Parameters
+By default, JavaScript already supports optional parameters. When you initialized a function and do not pass all defined parameters your application wil still work properly.
+
+But, with TypeScript the compiler will check the number of passed parameters and defined parameters and if the types are compatible. If not, this will issue an error.
+
+So, to specify an optional parameters you may use the question mark (?).
+
+```ts
+function multiply(a: number, b: number, c?: number): number {
+
+    if (typeof c !== 'undefined') {
+        return a * b * c;
+    }
+    return a * b;
+}
+```
+
+Make sure that the optional parameters must appear after the required parameters in the parameter list.
+
+## Default parameters
+Same with optional parameters, JavaScript already supports default paramaters. Same with typescript with the following syntax.
+```ts
+function name(parameter1:type=defaultvalue1, parameter2:type=defaultvalue2,...) {
+   //
+}
+
+function applyDiscount(price: number, discount: number = 0.05): number {
+    return price * (1 - discount);
+}
+
+console.log(applyDiscount(100)); // 95
+```
+
+Keep in mind that you cannot use default parameters with function types.
+
+If you will define the default parameters before the required parameters, you have to explicitly pass ```undefined``` to get the default initialized value.
+
+## Rest parameters
+Rest parameters allows a function to accept zero or more arguments of the specified type. Here are the following rules:
+- A function only has one rest parameter
+- The rest parameters appear last in the parameter list
+- The type of the rest parameter is an array type
+
+```ts
+function getTotal(...numbers: number[]): number {
+    let total = 0;
+    numbers.forEach((num) => total += num);
+    return total;
+}
+
+console.log(getTotal()); // 0
+console.log(getTotal(10, 20)); // 30
+console.log(getTotal(10, 20, 30)); // 60
+```
+
+an example of rest parameters with multiple types
+
+```ts
+function combine(...args: (number | string)[]): [number, string] {
+  let total = 0;
+  let str = '';
+  args.forEach((arg) => {
+    if (typeof arg === 'number') {
+      total += arg;
+    } else if (typeof arg === 'string') {
+      str += arg;
+    }
+  });
+
+  return [total, str];
+}
+
+const [total, str] = combine(3, 'Happy', 2, 1, ' New Year');
+
+console.log({ total });
+console.log({ str });
+```
