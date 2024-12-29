@@ -69,10 +69,10 @@ The following are all primitive types of TypeScript:
 Type annotation is a way to specify the expected type for a variable, functions, object, etc.
 
 Example:
-```ts
+```js
 let stringVariable : string = "hello" // initializing a string variable
 stringVariable = 25 // will not work since the variable should only be string
-````
+```
 
 Array:
 ```ts
@@ -219,10 +219,10 @@ let hasError : boolean = true // type annotation
 let hasError = true // will also work
 ```
 ## Object
-```object``` type represens all values that are not primitive types.
+Object type represents all values that are not primitive types.
 
 Example of declaring an object variable
-```ts
+```tsx
 let employee : object
 
 employee = {
@@ -568,7 +568,7 @@ mouseEvent = 'mouseover'; // compiler error
 let anotherEvent: MyMouseEvent;
 ```
 ## Never
-```never``` type holds no value. It is like an empty set. Meaning, you cannot assign a value to a variable with the never type.
+Never type holds no value. It is like an empty set. Meaning, you cannot assign a value to a variable with the never type.
 
 ```ts
 let empty: never = 'hello' // Type 'string' is not assignable to type 'never'
@@ -690,3 +690,304 @@ const [total, str] = combine(3, 'Happy', 2, 1, ' New Year');
 console.log({ total });
 console.log({ str });
 ```
+
+## Function Overloading
+TypeScript Function Overloading allows you to define multiple function signatures for a single function and provide one implementation that handles all signatures.
+
+Compiler uses the function signatures to perform compile-time type checking to ensure type safety. 
+
+Example of a single function overloading that returns sum of two numbers or strings.
+```js
+// function signatures
+function add(a: number, b: number): number;
+function add(a: string, b: string): string;
+
+// function implementation
+
+function add(a: any, b: any): any {
+    if (typeof a === 'number' && typeof b === 'number') {
+        return a + b;
+    } else if (typeof a === 'string' && typeof b === 'string') {
+        return a + b;
+    }
+    throw new Error('Invalid arguments');
+}
+
+// usage
+console.log(add(10, 20));  // 30
+console.log(add('Hello, ', 'world!'));  // 'Hello, world!
+```
+
+### Function overload with optional parameters
+When you overload a function, the number of required parameters must be the same. If an overload has more parameters than the other, you need to make the additional parameters optional.
+
+```js
+function sum(a: number, b: number): number;
+function sum(a: number, b: number, c: number): number;
+function sum(a: number, b: number, c?: number): number {
+    if (c) return a + b + c;
+    return a + b;
+}
+```
+
+### Method Overloading
+When a function is a property of a class, it is called a method. TypeScript also supports method overloading.
+
+```js
+class Counter {
+  private current = 0;
+  count(): number;
+  count(target: number): number[];
+  count(target?: number): number | number[] {
+    if (target) {
+      let values: number[] = [];
+      for (let start = this.current; start <= target; start++) {
+        values.push(start);
+      }
+      // set current to target
+      this.current = target;
+      return values;
+    }
+    return ++this.current;
+  }
+}
+```
+
+## Prototypal Inheritance (JavaScript)
+JavaScript does not have a concept of classical inheritance like Java and C#. Instead, it uses prototypal inheritance using object.
+
+In prototypal inheritance, an object "inherits" properties from another object via the prototype linkage.
+
+The following defines a person object:
+```js
+let person = {
+  name: "Mark",
+  greet: function() {
+    return `Hi! I'm ${this.name}`;
+  }
+}
+```
+
+The person object is linked to the ```Object()``` functions. The ```[[Prototype]]``` represents the linkage:
+[Object Image with Linkage](https://www.javascripttutorial.net/wp-content/uploads/2022/01/JavaScript-prototypal-inheritance.svg)
+
+It means that the person object can call any methods defines by the Object.prototype.
+
+When calling the ```toString()``` method via person object:
+```js
+console.log(person.toString()) // result: [object Object]
+```
+
+The ```[object Object]``` is a default string representation of an object.
+
+When you call the ```toString()``` method via person object, the JS engine cannot find it on the person object. Therefore, it follows the prototype chain and searches for the method in the ```Object.prototype``` object.
+
+To access the prototype of the person object, you can use the ```__proto__``` property.
+```js
+console.log(person.__proto__)
+
+// the following will also resolve into true
+console.log(person.__proto__ === Object.prototype) // true
+```
+
+The following defines the teacher object with a ```teacher()``` method.
+```js
+let teacher = {
+  teach: function (subject) {
+    return `I can teach ${subject}`
+  }
+}
+```
+
+If you want the teacher object to access all methods and properties of the person object, you can set the prototype of teacher object to the person object.
+```js
+teacher.__proto__ = person;
+```
+
+Now, the teacher has access to the name property and ```greet()``` method from the person object via prototype chain.
+
+### Standard way of Prototypal inheritance in ES5.
+ES5 provided a standard way with protorypal inheritance using the ```Object.create()``` method.
+
+> Note: now you should use the newer ES6 class and extends keyword.
+
+The ```Object.create()``` method creates a new object and uses an existing object as a prototype of the new Object.
+
+```js
+Object.create(proto, [propertiesObject])
+
+// person object
+let person = {
+  name: "Mark",
+  greet: function () {
+    return `Hi ..`
+  }
+}
+
+// to perform the Prototypal Inheritance in ES5
+let teacher = Object.create(person)
+
+// the teacher object now has an access to the properties and methods of the person object
+
+// you can also create the object with the needed properties
+let teacher = Object.create(person, {
+  name: { value: "Bianca" },
+  teach: { value: function (subject) {
+    return `I can teach ${subject}`
+  }}
+})
+```
+
+### ES6 class declaration
+ES6 introduces a new syntax for declaring a class
+
+```js
+class Person {
+  constructor(name) {
+    this.name = name
+  }
+
+  getName() {
+    return this.name
+  }
+}
+```
+
+This person object behaves like the the previous examples. However, instead of using a constructor/prototype pattern, it uses the class keyword.
+
+### TypeScript Class
+TypeScript class adds type annotations to the properties and methods of the class.
+```js
+class Person {
+    ssn: string;
+    firstName: string;
+    lastName: string;
+
+    constructor(ssn: string, firstName: string, lastName: string) {
+        this.ssn = ssn;
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
+    getFullName(): string {
+        return `${this.firstName} ${this.lastName}`;
+    }
+}
+```
+
+## TypeScript Access Modifiers
+The following Access modifiers change the visibility and accessibility of the properties and methods:
+- private
+- protected
+- public
+
+### Private
+private modifiers limits the visibility and accessibility on the same class only.
+
+```js
+class Person {
+  private ssn: string;
+  private firstName: string;
+  private lastName: string;
+
+  constructor(ssn: string, firstName: string, lastName: string) {
+    this.ssn = ssn;
+    this.firstName = firstName;
+    this.lastName = lastName;
+  }
+
+  getFullName(): string {
+    return `${this.firstName} ${this.lastName}`;
+  }
+}
+
+let person = new Person('153-07-3130', 'John', 'Doe');
+console.log(person.ssn); // compile error
+```
+
+### Public
+public modifiers allows class properties and methods to be access from all locations. By default, when not specifying an access modifier it will be set as public.
+```js
+class Person {
+    // ...
+    public getFullName(): string {
+        return `${this.firstName} ${this.lastName}`; 
+    }
+    // ...
+}
+```
+
+### Protected
+protected modifiers allows properties and methods of a class to be accessible within the same class and subclasses (class who inherits the parent class)
+```js
+class Person {
+  protected ssn: string;
+  private firstName: string;
+  private lastName: string;
+
+  constructor(ssn: string, firstName: string, lastName: string) {
+    this.ssn = ssn;
+    this.firstName = firstName;
+    this.lastName = lastName;
+  }
+
+  getFullName(): string {
+    return `${this.firstName} ${this.lastName}`;
+  }
+}
+```
+
+To make the code shorter, you can also both declare and initialize the properties:
+```js
+class Person {
+  constructor(
+    protected ssn: string,
+    private firstName: string,
+    private lastName: string
+  ) {}
+
+  getFullName(): string {
+    return `${this.firstName} ${this.lastName}`;
+  }
+}
+```
+
+## readonly
+The readonly access modifiers allows you to mark the class properties as immutable property.
+
+The assignment to a readonly property can only occue in one of the two places:
+- In the property declaration
+- In the constructor of the same class
+
+```js
+class Person {
+    readonly birthDate: Date;
+
+    constructor(birthDate: Date) {
+        this.birthDate = birthDate;
+    }
+}
+
+let person = new Person(new Date(1990, 12, 25));
+person.birthDate = new Date(1991, 12, 25); // Compile error
+```
+
+Like other access modifiers, you can consolidate the declaration and initialization of a readonly property:
+```js
+class Person {
+    constructor(readonly birthDate: Date) {
+    }
+}
+```
+
+### readonly vs const
+
+readonly:
+- Used for: Class properties
+- Initialization: In the declaration or in the constructor of the same class
+
+const:
+- Used for: Variable
+- Initialization: In the declaration
+
+
