@@ -990,4 +990,218 @@ const:
 - Used for: Variable
 - Initialization: In the declaration
 
+## Getters and Setters
+Getters method returns the value of the property's value. A getter is also called an accessor.
+Setter method updates the property's value. A setter is also called a mutator.
 
+```js
+class Person {
+  private _age: number;
+  private _firstName: string;
+  private _lastName: string;
+
+  constructor(age: number, firstName: string, lastName: string) {
+    this._age = age;
+    this._firstName = firstName;
+    this._lastName = lastName;
+  }
+
+  public get age() {
+    return this._age;
+  }
+
+  public set age(theAge: number) {
+    if (theAge <= 0 || theAge >= 200) {
+      throw new Error('The age is invalid');
+    }
+    this._age = theAge;
+  }
+
+  public get fullName() {
+    return `${this._firstName} ${this._lastName}`;
+  }
+}
+
+let person = new Person(22, "John", "Doe");
+person.age = 23 // will access the setter function
+person.age = 0 // Error: The age is invalid
+console.log(person.fullName) // John Doe
+```
+
+## Inheritance
+Inheritance makes it possible to reuse the properties and methods of another class without recreating them.
+
+The class who's inherits the properties and methods are called "child class" and the class who's properties and methods are inherited from are called "parent class"
+
+In JavaScript and Typescript there's no inheritance like C# and Java, we use prototypal inheritance. ES6 provides a ```class``` syntax, which is a syntactical sugar of the prototypal inheritance.
+
+Suppose we have a class Person:
+```js
+class Person {
+  constructor(private firstName: string, private lastName: string) {}
+  getFullName(): string {
+    return `${this.firstName} ${this.lastName}`;
+  }
+  describe(): string {
+    return `This is ${this.firstName} ${this.lastName}.`;
+  }
+}
+```
+
+To inherit the Person class, we use the ```extend``` keyword:
+
+```js
+class Employees extends Person {
+  //...
+}
+```
+
+### Constructor
+Since the Person class has a constructor that initializes the firstName and lastName properties, you need to initialize these properties in the constructor of the child class (in our case, the Employee class).
+
+```js
+class Employees extends Person {
+    constructor(
+        firstName: string,
+        lastName: string,
+        private jobTitle: string) {
+
+        super(firstName, lastName)
+    }
+}
+
+let employee = new Employees("John", "Doe", "IT")
+console.log(employee.getFullName()) // John Doe
+```
+
+### Method Overriding
+If you called the ```describe()``` method in the Employee class, the ```describe()``` method of the Person class will be invoked.If you want for the Employee class to has its own ```describe()``` method, you can define it like so:
+
+```js
+class Employees extends Person {
+    constructor(
+        firstName: string,
+        lastName: string,
+        private jobTitle: string) {
+
+        super(firstName, lastName)
+    }
+
+    describe(): string {
+        return `${super.describe()} I am a ${this.jobTitle}`
+    }
+}
+
+let employee = new Employees("John", "Doe", "IT")
+console.log(employee.describe()) // This is John Doe. I am IT
+```
+
+or don't call the parent method
+
+```js
+//...
+describe(): string {
+        return `I am a ${this.jobTitle}`
+}
+
+let employee = new Employees("John", "Doe", "IT")
+console.log(employee.describe()) // I am IT
+```
+
+## Statis Methods and Properties
+
+### Static Properties
+Unlike an instance property, a static property is shared among all instances of a class.
+```js
+class Employee {
+    static headcount: number = 0;
+
+    constructor(
+        private firstName: string,
+        private lastName: string,
+        private jobTitle: string) {
+
+        Employee.headcount++;
+    }
+}
+
+let john = new Employee('John', 'Doe', 'Front-end Developer');
+let jane = new Employee('Jane', 'Doe', 'Back-end Developer');
+
+console.log(Employee.headcount); // 2
+```
+
+This code will initialize the ```headcount``` property into zero. It's value is increased by 1 whenever a new object is created.
+
+### Static Methods
+Static methods is also shared across instances of the class.
+
+```js
+class Employee {
+    private static headcount: number = 0;
+
+    constructor(
+        private firstName: string,
+        private lastName: string,
+        private jobTitle: string) {
+
+        Employee.headcount++;
+    }
+
+    public static getHeadcount() {
+        return Employee.headcount;
+    }
+}
+
+let john = new Employee('John', 'Doe', 'Front-end Developer');
+let jane = new Employee('Jane', 'Doe', 'Back-end Developer');
+
+console.log(Employee.getHeadcount); // 2
+```
+
+## Abstract Classes
+Abstract class are used to define common behaviors for derived/normals class to extend. Unlike derived classes, they cannot be instantiated directly.
+
+```js
+abstract class Employee {
+  // one or more abstract methods
+}
+```
+
+Abstract method does not contain implementations. It only defines the method signature that must be implemented by the derived class.
+
+```js
+abstract class Employee {
+  constructor(private firstName: string, private lastName: string) {}
+
+  abstract getSalary(): number;
+
+  get fullName(): string {
+    return `${this.firstName} ${this.lastName}`;
+  }
+
+  compensationStatement(): string {
+    return `${this.fullName} makes ${this.getSalary()} a month.`;
+  }
+}
+```
+
+Since the employee class is an Abstract class, you cannot create a new object from it.
+```js
+let employee = new Employee('John','Doe'); // Error: TS2511: Cannot create an instance of an abstract class.
+```
+
+The following code shows how to extend an Abstract class and use an abstract method.
+```js
+class FullTimeEmployee extends Employee {
+  constructor(firstName: string, lastName: string, private salary: number) {
+    super(firstName, lastName);
+  }
+
+  getSalary(): number {
+      return this.salary;
+  }
+}
+```
+
+> **NOTE** It’s a good practice to use abstract classes when you want to share code among some related classes.
