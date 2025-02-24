@@ -1,4 +1,4 @@
-import { EditorState, Facet, StateField } from "@codemirror/state";
+import { EditorState, Facet, StateEffect, StateField } from "@codemirror/state";
 import {
   EditorView,
   keymap,
@@ -11,9 +11,13 @@ import { cursorDocEnd, defaultKeymap } from "@codemirror/commands";
 // FACET
 let info = Facet.define();
 
+// StateEffect
+let updateCounterStateEffectType = StateEffect.define();
+let incrementCounterByFiveStateEffect = updateCounterStateEffectType.of(5);
+
 // StateField
 const changeCounterStateField = StateField.define({
-  create: () => {
+  create: (state) => {
     return 0;
   },
   update: (currVal, transaction) => {
@@ -21,6 +25,13 @@ const changeCounterStateField = StateField.define({
     if (transaction.docChanged) {
       newValue += 1;
     }
+
+    for (const effect of transaction.effects) {
+      if (effect.is(updateCounterStateEffectType)) {
+        newValue += effect.value;
+      }
+    }
+    console.log(newValue);
     return newValue;
   },
 });
@@ -49,9 +60,10 @@ let view = new EditorView({
 // let updateDispatch = view.state.update({});
 
 // view.dispatch(updateDispatch);
-// view.dispatch({
-//   changes: { from: 0, insert: "#!/usr/bin/env node\n" },
-// });
+view.dispatch({
+  changes: { from: 0, insert: "#!/usr/bin/env node\n" },
+  effects: [incrementCounterByFiveStateEffect],
+});
 
 // let editorDoc = view.state.doc.toString();
 // let position = 0;
