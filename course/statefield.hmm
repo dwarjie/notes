@@ -1,0 +1,15 @@
+State Field
+	EditorState
+	Create
+		Initial Value
+	Update
+		Re-compute
+			Sync
+	StateEffect
+		Pass Value
+			Facet
+			StateField
+			ViewPlugin
+			Decorations
+		StateEffectType
+			Representation
