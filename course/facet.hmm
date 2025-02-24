@@ -1,0 +1,18 @@
+Facet
+	EditorState
+		Extensions
+	of Method
+		Configuration
+			tabSize
+			lineSeparator
+			readonly
+		Event Handlers
+			domEventHandlers
+			inputHandler
+			updateListener
+		Computation
+			drawSelection
+		Multiple Input
+			Single Output
+				Highest Precedence
+				Array

@@ -1,0 +1,19 @@
+{
+  "name": "topic1",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^6.1.0"
+  },
+  "dependencies": {
+    "@codemirror/commands": "^6.8.0",
+    "@codemirror/state": "^6.5.2",
+    "@codemirror/view": "^6.36.3"
+  }
+}
