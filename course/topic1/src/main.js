@@ -5,8 +5,22 @@ import {
   gutter,
   lineNumbers,
   highlightActiveLine,
+  showPanel,
+  WidgetType,
+  Decoration,
 } from "@codemirror/view";
 import { cursorDocEnd, defaultKeymap } from "@codemirror/commands";
+
+// StateField panel creator helper
+function createCounterPanel(value) {
+  return () => {
+    const dom = document.createElement("div");
+    dom.textContent = `Current count is ${value}`;
+    dom.className = "midpoint-widget";
+
+    return { dom };
+  };
+}
 
 // FACET
 let info = Facet.define();
@@ -31,8 +45,51 @@ const changeCounterStateField = StateField.define({
         newValue += effect.value;
       }
     }
-    console.log(newValue);
     return newValue;
+  },
+  provide: (value) => showPanel.from(value, createCounterPanel),
+});
+
+// decoration example
+class MidpointWidget extends WidgetType {
+  toDOM(view) {
+    const midpoint = Math.floor(view.state.doc.length / 2);
+
+    const dom = document.createElement("span");
+    dom.textContent = `${midpoint}`;
+    dom.className = "midpoint-widget";
+
+    return dom;
+  }
+}
+
+function getMidpointWidgetDecorationSet(midpoint) {
+  return Decoration.set([
+    Decoration.widget({
+      widget: new MidpointWidget(midpoint),
+    }).range(midpoint),
+  ]);
+}
+
+const midpointWidgetStateField = StateField.define({
+  create(state) {
+    const midpoint = Math.floor(state.doc.length / 2);
+
+    console.log(`Initial: ${midpoint}`);
+    return getMidpointWidgetDecorationSet(midpoint);
+  },
+  update(val, transaction) {
+    if (transaction.docChanged) {
+      const newMidpoint = Math.floor(transaction.newDoc.length / 2);
+
+      console.log(`Updated: ${newMidpoint}`);
+      return getMidpointWidgetDecorationSet(newMidpoint);
+    }
+
+    return val;
+  },
+  provide: (f) => {
+    EditorView.decorations.from(f);
   },
 });
 
@@ -48,7 +105,8 @@ let editorState = EditorState.create({
       ["selection"],
       (state) => `# of line: ${state.selection.mainIndex}`,
     ),
-    changeCounterStateField.extension,
+    changeCounterStateField,
+    midpointWidgetStateField,
   ],
 });
 

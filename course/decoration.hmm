@@ -1,0 +1,23 @@
+Decoration
+	Manipulate
+		DOM
+			Sync
+				EditorView
+		Mark Decorations
+			Character Basis
+				Range
+			Add
+				CSS Class Name
+		Widget Decorations
+			Add
+				HTML Element
+				Widget
+		Replace Decoration
+			Replace Content			
+				Widget
+				HTML Element
+			Hide Content
+		Line Decorations
+			Line Basis
+				Editor Line			
+			Mark Decorations

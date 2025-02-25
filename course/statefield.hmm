@@ -4,7 +4,11 @@ State Field
 		Initial Value
 	Update
 		Re-compute
-			Sync
+			Syncing
+	Provide
+		Render
+			DOM
+			Extension
 	StateEffect
 		Pass Value
 			Facet
