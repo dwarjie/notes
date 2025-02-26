@@ -1,0 +1,12 @@
+View Plugin
+	Draw (not in specific range)
+		Using
+			Function Method
+			Class Method
+		Element
+		Content
+	State
+	Receive Updates
+		View
+			Re-render
+		

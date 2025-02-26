@@ -50,49 +50,6 @@ const changeCounterStateField = StateField.define({
   provide: (value) => showPanel.from(value, createCounterPanel),
 });
 
-// decoration example
-class MidpointWidget extends WidgetType {
-  toDOM(view) {
-    const midpoint = Math.floor(view.state.doc.length / 2);
-
-    const dom = document.createElement("span");
-    dom.textContent = `${midpoint}`;
-    dom.className = "midpoint-widget";
-
-    return dom;
-  }
-}
-
-function getMidpointWidgetDecorationSet(midpoint) {
-  return Decoration.set([
-    Decoration.widget({
-      widget: new MidpointWidget(midpoint),
-    }).range(midpoint),
-  ]);
-}
-
-const midpointWidgetStateField = StateField.define({
-  create(state) {
-    const midpoint = Math.floor(state.doc.length / 2);
-
-    console.log(`Initial: ${midpoint}`);
-    return getMidpointWidgetDecorationSet(midpoint);
-  },
-  update(val, transaction) {
-    if (transaction.docChanged) {
-      const newMidpoint = Math.floor(transaction.newDoc.length / 2);
-
-      console.log(`Updated: ${newMidpoint}`);
-      return getMidpointWidgetDecorationSet(newMidpoint);
-    }
-
-    return val;
-  },
-  provide: (f) => {
-    EditorView.decorations.from(f);
-  },
-});
-
 let editorState = EditorState.create({
   doc: "*1*2*3*4\n hi",
   extensions: [
@@ -106,7 +63,6 @@ let editorState = EditorState.create({
       (state) => `# of line: ${state.selection.mainIndex}`,
     ),
     changeCounterStateField,
-    midpointWidgetStateField,
   ],
 });
 
