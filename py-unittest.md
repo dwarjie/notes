@@ -310,7 +310,7 @@ Sometimes, you're feature is expected to throw an Exception (e.g., UserError, Va
 
 ```assertRaisesRegex()``` doesn't seem to be useful for me right now so I won't add it here. But, you can check it on your own.
 
-Using ```assertRaises()``` method needs to be called in a context manager for it to catch the exception properly. Another way is lamdba, you may check this (link)[https://ongspxm.gitlab.io/blog/2016/11/assertraises-testing-for-errors-in-unittest/]
+Using ```assertRaises()``` method needs to be called in a context manager for it to catch the exception properly. Another way is lamdba, you may check this [link](https://ongspxm.gitlab.io/blog/2016/11/assertraises-testing-for-errors-in-unittest/)
 
 ```py
 def check_if_num_1(number):
