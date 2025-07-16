@@ -48,8 +48,7 @@ This is an example of image-classification task where we used the model of googl
  {'label': 'tiger cat', 'score': 0.02288915030658245}]
 ```
 
-Are you curious what is the actual code needed to run this without the 
-```pipeline()```` function? Here's an example:
+Are you curious what is the actual code needed to run this without the ```pipeline()``` function? Here's an example:
 ```py
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
