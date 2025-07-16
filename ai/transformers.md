@@ -147,3 +147,20 @@ model = AutoModelForCausalLM.from_pretrained("meta-llama/Llama-2-7b-hf")
 model = AutoModelForSequenceClassification.from_pretrained("meta-llama/Llama-2-7b-hf")
 model = AutoModelForQuestionAnswering.from_pretrained("meta-llama/Llama-2-7b-hf")
 ```
+
+## Tokenizer
+Tokenizer converts text into an array of numbers (since computers can only understand numbers!). There are different tokenizer algorithms depending on the model, but they all share the same goal. Split text into smaller words the converts it into numbers (called input ids) which are used to give as an input to the models.
+
+In hugging face, you can call ```from_pretrained()``` method to load the tokenizer and config file (present in the pretrained model file).
+
+```py
+from transformers import AutoTokenizer
+
+tokenizer = AutoTokenizer.from_pretrained("google/gemma-2-2b")
+tokenizer("We are very happy to show you the 🤗 Transformers library", return_tensors="pt")
+{'input_ids': tensor([[     2,   1734,    708,   1508,   4915,    577,   1500,    692,    573,
+         156808, 128149,   9581, 235265]]), 
+ 'attention_mask': tensor([[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]])
+}
+```
+
