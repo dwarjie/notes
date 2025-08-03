@@ -244,3 +244,166 @@ To be able to see if the prompt is cached, if the prompt is over 1024 tokens, th
   }
 }
 ```
+
+# Function Calling
+
+Enables the model to fetch input or external data and include in the final prompt
+
+Function calling allows the model to interface with your code or external data (e.g., fetching of weather, sending an email, etc.)
+
+Here's a simple example of implementing function calling for getting the weather:
+
+```js
+import { OpenAI } from "openai";
+
+const openai = new OpenAI();
+// opena ai api key
+
+const tools = [
+	{
+		type: "function",
+		function: {
+			name: "get_weather",
+			description: "Get current temperature for a given location.",
+			parameters: {
+				type: "object",
+				properties: {
+					// parameters needed for the function
+					location: {
+						type: "string",
+						description: "City and country e.g., Bogata, Colombia",
+					},
+				},
+				required: [
+					"location", // required properties
+				],
+				additionalProperties: false,
+			},
+			strict: true,
+		},
+	},
+];
+
+const messages = [{ role: "user", content: "What is the weather like in Paris?" }],
+
+const completion = await openai.chat.completions.create({
+	model: "gpt-4.1",
+  messages,
+	tools,
+	store: true,
+});
+
+console.log(completion.choices[0].message.tool_calls);
+```
+
+Output
+
+```bash
+[{
+    "id": "call_12345xyz",
+    "type": "function",
+    "function": {
+        "name": "get_weather",
+        "arguments": "{\"location\":\"Paris, France\"}"
+    }
+}]
+```
+
+The above code snippets will perform the following:
+
+- Prompt the OpenAI Model (with the function calling)
+- Now, the model will decide to call the function with the result (specified above)
+
+Once the Model decides to call the function, you must execute the function and provide the function data to the model:
+
+1. Execution of the function code (with the specified properties from the model):
+
+```js
+const toolCall = completion.choices[0].message.tool_calls[0];
+const agrs = JSON.parse(toolCall.function.arguments);
+
+const result = await getWeather(args.latitude, args.longtitude);
+```
+
+2. Supply result to the model
+
+```js
+messages.push(completion.choices[0].message);
+messages.push({
+	role: "tool",
+	tool_call_id: toolCall.id,
+	content: result.toStrig(),
+});
+
+const completion2 = await openai.chat.completions.create({
+	model: "gpt-4.1",
+	messages,
+	tools,
+	store: true,
+});
+
+console.log(completion2.choices[0].message.content);
+```
+
+## Hanlding Function Calls
+
+Since your application needs to execute and return the data of the function call, model responses can include zero, one, or multiple function calls so it's safe to assume that there are multiple calls.
+
+The response includes an array of tool_calls with id, function name and arguments.
+Sample Function Call Response
+
+```bash
+[
+    {
+        "id": "call_12345xyz",
+        "type": "function",
+        "function": {
+            "name": "get_weather",
+            "arguments": "{\"location\":\"Paris, France\"}"
+        }
+    },
+    {
+        "id": "call_67890abc",
+        "type": "function",
+        "function": {
+            "name": "get_weather",
+            "arguments": "{\"location\":\"Bogotá, Colombia\"}"
+        }
+    },
+    {
+        "id": "call_99999def",
+        "type": "function",
+        "function": {
+            "name": "send_email",
+            "arguments": "{\"to\":\"bob@email.com\",\"body\":\"Hi bob\"}"
+        }
+    }
+]
+```
+
+You may loop over each tool_calls and have a call function parser that determines what function to call.
+
+```js
+const callFunction = async (name, args) => {
+	if (name === "get_weather") {
+		return getWeather(args.latitude, args.longitude);
+	}
+	if (name === "send_email") {
+		return sendEmail(args.to, args.body);
+	}
+};
+
+for (const toolCall of completion.choices[0].message.tool_calls) {
+	const assistantMessage = completion.choices[0].message;
+	message.push(assistantMessage);
+	const name = toolCall.function.name;
+	const args = JSON.parse(toolCall.function.arguments);
+
+	const result = callFunction(name, args);
+	messages.push({
+		role: "tool",
+		tool_call_id: toolCall.id,
+		content: result.toString(),
+	});
+}
+```
